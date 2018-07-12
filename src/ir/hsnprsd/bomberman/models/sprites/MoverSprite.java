@@ -19,8 +19,8 @@ public abstract class MoverSprite extends Sprite {
             }
             Sprite sprite = game.getSprite(x, y);
             if (sprite == null) {
-                setX(destination.getX());
-                setY(destination.getY());
+                setX(x);
+                setY(y);
             }
         }
     }

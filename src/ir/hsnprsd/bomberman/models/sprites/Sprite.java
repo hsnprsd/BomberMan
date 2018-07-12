@@ -35,6 +35,6 @@ public abstract class Sprite {
     }
 
     public enum Type {
-        PLAYER, BLOCK
+        PLAYER, ENEMY, BLOCK
     }
 }

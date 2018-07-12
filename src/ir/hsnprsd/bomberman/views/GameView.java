@@ -5,6 +5,7 @@ import ir.hsnprsd.bomberman.controllers.GameController;
 import ir.hsnprsd.bomberman.models.Game;
 import ir.hsnprsd.bomberman.models.sprites.Block;
 import ir.hsnprsd.bomberman.models.sprites.BomberMan;
+import ir.hsnprsd.bomberman.models.sprites.Enemy;
 import ir.hsnprsd.bomberman.views.utils.ResourceLoader;
 
 import javax.swing.*;
@@ -70,10 +71,17 @@ class GameView extends JPanel {
         drawBG(g);
         synchronized (game) {
             drawBomberMan(g, game.getBomberMan());
+            for (Enemy enemy: game.getEnemies()) {
+                drawEnemy(g, enemy);
+            }
             for (Block block : game.getBlocks()) {
                 drawBlock(g, block);
             }
         }
+    }
+
+    private void drawEnemy(Graphics g, Enemy enemy) {
+        drawImage(g, "enemy.png", enemy.getX(), enemy.getY());
     }
 
     private void drawBlock(Graphics g, Block block) {

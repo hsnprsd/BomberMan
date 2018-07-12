@@ -1,8 +1,5 @@
 package ir.hsnprsd.bomberman;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class Settings {
     public static final String RESOURCE_DIRECTORY = "/ir/hsnprsd/bomberman/resources/";
 
@@ -24,14 +21,17 @@ public class Settings {
         }
 
         interface GameView {
-            int CELL_SIZE = 64;
-            int CELL_PADDING = 7;
+            int CELL_SIZE = 80;
+            int CELL_PADDING = 5;
             int FPS = 50;
-            List<String> BLOCK_IMAGES = Arrays.asList("block-1.png", "block-2.png");
         }
     }
 
     public interface Game {
         int FPS = 60;
+
+        interface Enemy {
+            int DECIDE_TIMEOUT = 1000;
+        }
     }
 }

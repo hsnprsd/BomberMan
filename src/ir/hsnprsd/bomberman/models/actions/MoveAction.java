@@ -1,19 +1,19 @@
 package ir.hsnprsd.bomberman.models.actions;
 
-import ir.hsnprsd.bomberman.models.sprites.Sprite;
+import ir.hsnprsd.bomberman.models.sprites.MoverSprite;
 import ir.hsnprsd.bomberman.models.utils.Direction;
 
 public class MoveAction extends Action {
-    private Sprite sprite;
+    private MoverSprite sprite;
     private Direction direction;
 
-    public MoveAction(Sprite sprite, Direction direction) {
+    public MoveAction(MoverSprite sprite, Direction direction) {
         super(Type.MOVE);
         this.sprite = sprite;
         this.direction = direction;
     }
 
-    public Sprite getSprite() {
+    public MoverSprite getSprite() {
         return sprite;
     }
 

@@ -5,13 +5,11 @@ import ir.hsnprsd.bomberman.models.actions.Action;
 import ir.hsnprsd.bomberman.models.actions.MoveAction;
 import ir.hsnprsd.bomberman.models.sprites.Block;
 import ir.hsnprsd.bomberman.models.sprites.BomberMan;
+import ir.hsnprsd.bomberman.models.sprites.Enemy;
 import ir.hsnprsd.bomberman.models.sprites.Sprite;
 import ir.hsnprsd.bomberman.models.utils.Cell;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class Game {
     private Thread thread;
@@ -21,6 +19,7 @@ public class Game {
     private State state = State.LOADING;
 
     private BomberMan bomberMan;
+    private List<Enemy> enemies = new ArrayList<>();
     private List<Block> blocks = new ArrayList<>();
 
     private Queue<Action> actions = new LinkedList<>();
@@ -34,6 +33,16 @@ public class Game {
             }
         }
         bomberMan = new BomberMan(this, new Cell(0, 1));
+        Random random = new Random();
+        for (int i = 0; i < Math.max((width + height) / 4, 1); ++i) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            if (getSprite(x, y) != null || (x == 1 && y == 1) || (x == 2 && y == 1)) {
+                --i;
+                continue;
+            }
+            enemies.add(new Enemy(this, new Cell(x, y)));
+        }
     }
 
     public synchronized Sprite getSprite(int x, int y) {
@@ -59,6 +68,10 @@ public class Game {
 
     public synchronized BomberMan getBomberMan() {
         return bomberMan;
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemies;
     }
 
     public synchronized List<Block> getBlocks() {
@@ -87,7 +100,7 @@ public class Game {
         switch (action.getType()) {
             case MOVE:
                 MoveAction moveAction = ((MoveAction) action);
-                bomberMan.move(moveAction.getDirection());
+                moveAction.getSprite().move(moveAction.getDirection());
                 break;
         }
     }

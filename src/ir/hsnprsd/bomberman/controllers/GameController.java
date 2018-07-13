@@ -3,7 +3,6 @@ package ir.hsnprsd.bomberman.controllers;
 import ir.hsnprsd.bomberman.models.Game;
 import ir.hsnprsd.bomberman.models.sprites.Enemy;
 
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
@@ -45,7 +44,7 @@ public class GameController {
         }
         game.end();
         bomberManController = null;
-        for (Enemy enemy: enemyControllers.keySet()) {
+        for (Enemy enemy : enemyControllers.keySet()) {
             enemyControllers.get(enemy).interrupt();
         }
         enemyControllers.clear();

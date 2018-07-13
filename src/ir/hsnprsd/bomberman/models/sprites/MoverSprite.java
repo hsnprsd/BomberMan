@@ -1,27 +1,68 @@
 package ir.hsnprsd.bomberman.models.sprites;
 
 import ir.hsnprsd.bomberman.models.Game;
-import ir.hsnprsd.bomberman.models.utils.Cell;
-import ir.hsnprsd.bomberman.models.utils.Direction;
+import ir.hsnprsd.bomberman.models.geo.Direction;
+import ir.hsnprsd.bomberman.models.geo.Position;
+
+import java.util.List;
 
 public abstract class MoverSprite extends Sprite {
-    MoverSprite(Game game, Type type, Cell cell) {
-        super(game, type, cell);
+    private int speed;
+
+    private Direction direction, nextDirection;
+
+    MoverSprite(Game game, Type type, Position position, int speed) {
+        super(game, type, position);
+        this.speed = speed;
     }
 
-    public void move(Direction direction) {
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
+    }
+
+    public Direction getNextDirection() {
+        return nextDirection;
+    }
+
+    public void setNextDirection(Direction nextDirection) {
+        this.nextDirection = nextDirection;
+    }
+
+    public void move() {
         synchronized (game) {
-            int x = direction.dx + getX();
-            int y = direction.dy + getY();
-            Cell destination = new Cell(x, y);
-            if (!destination.isIn(game.getWidth(), game.getHeight())) {
-                return;
-            }
-            Sprite sprite = game.getSprite(x, y);
-            if (sprite == null) {
-                setX(x);
-                setY(y);
+            if (!move(nextDirection)) {
+                if (!move(direction)) {
+                    direction = null;
+                }
+            } else {
+                direction = nextDirection;
+                nextDirection = null;
             }
         }
+    }
+
+    private boolean move(Direction direction) {
+        if (direction == null) {
+            return false;
+        }
+        Position destination = position.move(direction.dx * speed, direction.dy * speed);
+        if (!new Position(0, 0, game.getWidth(), game.getHeight()).contains(destination)) {
+            return false;
+        }
+        List<Sprite> sprites = game.getSprites(destination);
+        boolean valid = true;
+        for (Sprite sprite : sprites) {
+            if (sprite.type == Type.BLOCK) {
+                valid = false;
+            }
+        }
+        if (valid) {
+            position = destination;
+        }
+        return valid;
     }
 }

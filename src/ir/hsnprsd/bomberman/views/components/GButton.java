@@ -1,7 +1,7 @@
 package ir.hsnprsd.bomberman.views.components;
 
-import ir.hsnprsd.bomberman.Settings;
-import ir.hsnprsd.bomberman.views.utils.ResourceLoader;
+import ir.hsnprsd.bomberman.views.Settings;
+import ir.hsnprsd.bomberman.views.ResourceLoader;
 
 import javax.swing.*;
 import java.awt.*;
@@ -53,7 +53,7 @@ public class GButton extends JComponent {
 
     private void drawText(Graphics g) {
         g.setColor(type.fgColor);
-        g.setFont(ResourceLoader.loadFont("arcade.ttf", Font.TRUETYPE_FONT, Settings.UI.FontSize.EXTRA_SMALL));
+        g.setFont(ResourceLoader.loadFont("arcade.ttf", Font.TRUETYPE_FONT, Settings.FontSize.EXTRA_SMALL));
         int width = g.getFontMetrics().stringWidth(text);
         int height = g.getFontMetrics().getHeight();
         g.drawString(text, (getWidth() - width) / 2, (getHeight() + height) / 2);
@@ -71,7 +71,7 @@ public class GButton extends JComponent {
     public enum Type {
         NORMAL(150, 50);
 
-        int width, height, fontSize = Settings.UI.FontSize.EXTRA_SMALL;
+        int width, height, fontSize = Settings.FontSize.EXTRA_SMALL;
         Color fgColor = Color.WHITE, bgColor = Color.DARK_GRAY, activeBGColor = Color.BLUE;
 
         Type(int width, int height) {

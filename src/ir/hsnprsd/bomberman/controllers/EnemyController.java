@@ -1,10 +1,10 @@
 package ir.hsnprsd.bomberman.controllers;
 
-import ir.hsnprsd.bomberman.Settings;
 import ir.hsnprsd.bomberman.models.Game;
+import ir.hsnprsd.bomberman.models.Settings;
 import ir.hsnprsd.bomberman.models.actions.MoveAction;
 import ir.hsnprsd.bomberman.models.sprites.Enemy;
-import ir.hsnprsd.bomberman.models.utils.Direction;
+import ir.hsnprsd.bomberman.models.geo.Direction;
 
 import java.util.Date;
 import java.util.Random;
@@ -26,7 +26,7 @@ public class EnemyController extends Thread {
             long startTime = new Date().getTime();
             game.addAction(new MoveAction(enemy, Direction.values()[random.nextInt(4)]));
             try {
-                Thread.sleep(Settings.Game.Enemy.DECIDE_TIMEOUT - (new Date().getTime() - startTime));
+                Thread.sleep(Settings.Enemy.DECIDE_TIMEOUT - (new Date().getTime() - startTime));
             } catch (InterruptedException e) {
                 break;
             }

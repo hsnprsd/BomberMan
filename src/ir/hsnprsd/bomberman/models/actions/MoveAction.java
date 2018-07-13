@@ -1,7 +1,7 @@
 package ir.hsnprsd.bomberman.models.actions;
 
 import ir.hsnprsd.bomberman.models.sprites.MoverSprite;
-import ir.hsnprsd.bomberman.models.utils.Direction;
+import ir.hsnprsd.bomberman.models.geo.Direction;
 
 public class MoveAction extends Action {
     private MoverSprite sprite;

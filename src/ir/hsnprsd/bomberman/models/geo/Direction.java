@@ -1,4 +1,4 @@
-package ir.hsnprsd.bomberman.models.utils;
+package ir.hsnprsd.bomberman.models.geo;
 
 public enum Direction {
     LEFT(-1, 0), RIGHT(1, 0), UP(0, -1), DOWN(0, 1);

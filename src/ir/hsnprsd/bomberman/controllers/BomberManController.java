@@ -3,8 +3,8 @@ package ir.hsnprsd.bomberman.controllers;
 import ir.hsnprsd.bomberman.models.Game;
 import ir.hsnprsd.bomberman.models.actions.Action;
 import ir.hsnprsd.bomberman.models.actions.MoveAction;
+import ir.hsnprsd.bomberman.models.geo.Direction;
 import ir.hsnprsd.bomberman.models.sprites.BomberMan;
-import ir.hsnprsd.bomberman.models.utils.Direction;
 
 import java.awt.event.KeyEvent;
 

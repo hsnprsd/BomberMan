@@ -1,37 +1,31 @@
 package ir.hsnprsd.bomberman.models.sprites;
 
 import ir.hsnprsd.bomberman.models.Game;
-import ir.hsnprsd.bomberman.models.utils.Cell;
+import ir.hsnprsd.bomberman.models.geo.Position;
 
 public abstract class Sprite {
-    protected Game game;
     protected Type type;
-    protected Cell cell;
 
-    Sprite(Game game, Type type, Cell cell) {
-        this.game = game;
+    protected final Game game;
+    protected Position position;
+
+    Sprite(Game game, Type type, Position position) {
         this.type = type;
-        this.cell = cell;
+
+        this.game = game;
+        this.position = position;
     }
 
-    public Cell getCell() {
-        return cell;
+    public Type getType() {
+        return type;
     }
 
-    public int getX() {
-        return cell.getX();
+    public Position getPosition() {
+        return position;
     }
 
-    protected void setX(int x) {
-        cell.setX(x);
-    }
-
-    public int getY() {
-        return cell.getY();
-    }
-
-    protected void setY(int y) {
-        cell.setY(y);
+    public void setPosition(Position position) {
+        this.position = position;
     }
 
     public enum Type {

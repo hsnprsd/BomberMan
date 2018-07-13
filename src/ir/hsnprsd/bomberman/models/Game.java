@@ -1,19 +1,19 @@
 package ir.hsnprsd.bomberman.models;
 
-import ir.hsnprsd.bomberman.Settings;
 import ir.hsnprsd.bomberman.models.actions.Action;
 import ir.hsnprsd.bomberman.models.actions.MoveAction;
+import ir.hsnprsd.bomberman.models.geo.Position;
 import ir.hsnprsd.bomberman.models.sprites.Block;
 import ir.hsnprsd.bomberman.models.sprites.BomberMan;
 import ir.hsnprsd.bomberman.models.sprites.Enemy;
 import ir.hsnprsd.bomberman.models.sprites.Sprite;
-import ir.hsnprsd.bomberman.models.utils.Cell;
 
 import java.util.*;
 
 public class Game {
     private Thread thread;
 
+    private int gridWidth, gridHeight;
     private int width, height;
 
     private State state = State.LOADING;
@@ -24,38 +24,54 @@ public class Game {
 
     private Queue<Action> actions = new LinkedList<>();
 
-    public Game(int width, int height) {
-        this.width = width;
-        this.height = height;
-        for (int x = 0; x < width; x += 2) {
-            for (int y = 0; y < height; y += 2) {
-                blocks.add(new Block(this, new Cell(x, y)));
+    public Game(int gridWidth, int gridHeight) {
+        this.gridWidth = gridWidth;
+        this.gridHeight = gridHeight;
+
+        this.width = gridWidth * getCellSize();
+        this.height = gridHeight * getCellSize();
+
+        for (int x = 0; x < gridWidth; x += 2) {
+            for (int y = 0; y < gridHeight; y += 2) {
+                blocks.add(new Block(this, new Position(x * getCellSize(), y * getCellSize(), getCellSize())));
             }
         }
-        bomberMan = new BomberMan(this, new Cell(0, 1));
+
+        bomberMan = new BomberMan(this, new Position(0, getCellSize(), getCellSize()));
+
         Random random = new Random();
-        for (int i = 0; i < Math.max((width + height) / 4, 1); ++i) {
-            int x = random.nextInt(width);
-            int y = random.nextInt(height);
-            if (getSprite(x, y) != null || (x == 1 && y == 1) || (x == 2 && y == 1)) {
+        for (int i = 0; i < Math.max((gridWidth + gridHeight) / 4, 1); ++i) {
+            int x = random.nextInt(gridWidth);
+            int y = random.nextInt(gridHeight);
+            Position position = new Position(x * getCellSize(), y * getCellSize(), (x + 1) * getCellSize(), (y + 1) * getCellSize());
+            if (!getSprites(position).isEmpty() || (x == 1 && y == 1) || (x == 2 && y == 1)) {
                 --i;
                 continue;
             }
-            enemies.add(new Enemy(this, new Cell(x, y)));
+            enemies.add(new Enemy(this, new Position(x * getCellSize(), y * getCellSize(), getCellSize())));
         }
     }
 
-    public synchronized Sprite getSprite(int x, int y) {
-        Cell cell = new Cell(x, y);
-        if (bomberMan.getCell().equals(cell)) {
-            return bomberMan;
+    public synchronized List<Sprite> getSprites(Position position) {
+        List<Sprite> result = new ArrayList<>();
+        if (bomberMan.getPosition().intersects(position)) {
+            result.add(bomberMan);
         }
-        for (Block block : blocks) {
-            if (block.getCell().equals(cell)) {
-                return block;
+        for (Enemy enemy : enemies) {
+            if (enemy.getPosition().intersects(position)) {
+                result.add(enemy);
             }
         }
-        return null;
+        for (Block block : blocks) {
+            if (block.getPosition().intersects(position)) {
+                result.add(block);
+            }
+        }
+        return result;
+    }
+
+    public int getCellSize() {
+        return Settings.CELL_SIZE;
     }
 
     public int getWidth() {
@@ -100,9 +116,16 @@ public class Game {
         switch (action.getType()) {
             case MOVE:
                 MoveAction moveAction = ((MoveAction) action);
-                moveAction.getSprite().move(moveAction.getDirection());
+                moveAction.getSprite().setNextDirection(moveAction.getDirection());
                 break;
         }
+    }
+
+    private synchronized void doUpdates() {
+        for (Enemy enemy : enemies) {
+            enemy.move();
+        }
+        bomberMan.move();
     }
 
     public void start() {
@@ -112,11 +135,14 @@ public class Game {
         thread = new Thread(() -> {
             setState(State.RUNNING);
             while (!Thread.currentThread().isInterrupted()) {
-                if (getState() == State.RUNNING) {
-                    doActions();
+                synchronized (this) {
+                    if (getState() == State.RUNNING) {
+                        doActions();
+                        doUpdates();
+                    }
                 }
                 try {
-                    Thread.sleep(1000 / Settings.Game.FPS);
+                    Thread.sleep(1000 / Settings.FPS);
                 } catch (InterruptedException e) {
                     setState(State.INTERRUPTED);
                     break;

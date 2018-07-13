@@ -1,7 +1,8 @@
-package ir.hsnprsd.bomberman.views;
+package ir.hsnprsd.bomberman.views.panels;
 
-import ir.hsnprsd.bomberman.Settings;
 import ir.hsnprsd.bomberman.controllers.GameController;
+import ir.hsnprsd.bomberman.views.GameFrame;
+import ir.hsnprsd.bomberman.views.Settings;
 import ir.hsnprsd.bomberman.views.components.GButton;
 import ir.hsnprsd.bomberman.views.components.GLabel;
 
@@ -11,20 +12,20 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-class StartMenu extends JPanel {
-    StartMenu(GameFrame view, GameController controller) {
+public class StartMenuPanel extends JPanel {
+    public StartMenuPanel(GameFrame view, GameController controller) {
 //        start menu settings
         setBackground(Color.BLACK);
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        int padding = Settings.UI.StartMenu.PADDING;
+        int padding = Settings.StartMenu.PADDING;
         setBorder(new EmptyBorder(padding, padding, padding, padding));
 
 //        add title and lead to header
         JPanel header = getPanel();
 
-        GLabel title = new GLabel("BOMBER MAN", Settings.UI.FontSize.LARGE);
+        GLabel title = new GLabel("BOMBER MAN", Settings.FontSize.LARGE);
         title.setAlignmentX(CENTER_ALIGNMENT);
-        GLabel lead = new GLabel("THE GREAT GAME!", Settings.UI.FontSize.SMALL);
+        GLabel lead = new GLabel("THE GREAT GAME!", Settings.FontSize.SMALL);
         lead.setAlignmentX(CENTER_ALIGNMENT);
 
         header.add(title);
@@ -60,7 +61,7 @@ class StartMenu extends JPanel {
 
 //        add panels to start menu
         add(header);
-        add(Box.createRigidArea(new Dimension(0, Settings.UI.StartMenu.SPACING)));
+        add(Box.createRigidArea(new Dimension(0, Settings.StartMenu.SPACING)));
         add(menu);
     }
 

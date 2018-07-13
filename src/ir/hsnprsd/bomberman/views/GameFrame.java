@@ -2,8 +2,11 @@ package ir.hsnprsd.bomberman.views;
 
 import ir.hsnprsd.bomberman.controllers.GameController;
 import ir.hsnprsd.bomberman.models.Game;
+import ir.hsnprsd.bomberman.views.panels.GamePanel;
+import ir.hsnprsd.bomberman.views.panels.StartMenuPanel;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class GameFrame extends JFrame {
     private Game game;
@@ -19,13 +22,15 @@ public class GameFrame extends JFrame {
 
     private void showStartMenu() {
         getContentPane().removeAll();
-        getContentPane().add(new StartMenu(this, controller));
+        getContentPane().add(new StartMenuPanel(this, controller));
         pack();
     }
 
     public void showGame() {
         getContentPane().removeAll();
-        getContentPane().add(new GameView(controller.getGame(), controller));
+        GamePanel view = new GamePanel(controller.getGame(), controller);
+        getContentPane().add(view);
         pack();
+        view.start();
     }
 }

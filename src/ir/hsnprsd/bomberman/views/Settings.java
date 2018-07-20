@@ -22,5 +22,9 @@ public interface Settings {
     interface GamePanel {
         int FPS = 50;
         int CELL_PADDING = 5;
+
+        interface Bomb {
+            int EXPLODE_ANIMATION_TIMEOUT = 1000;
+        }
     }
 }

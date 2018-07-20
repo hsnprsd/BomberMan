@@ -1,5 +1,7 @@
 package ir.hsnprsd.bomberman.views.sprites;
 
+import ir.hsnprsd.bomberman.views.animations.ImageSequence;
+
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ public class SpriteSheet {
         return image.getSubimage(cellWidth * x, cellHeight * y, cellWidth, cellHeight);
     }
 
-    public java.util.List<BufferedImage> getSequence(int x1, int y1, int x2, int y2) {
+    public ImageSequence getSequence(int x1, int y1, int x2, int y2) {
         if (y1 > y2 || (y1 == y2 && x1 > x2)) {
             throw new IllegalArgumentException();
         }
@@ -39,7 +41,7 @@ public class SpriteSheet {
                 y1++;
             }
         } while (!(x1 == x2 && y1 == y2));
-        return images;
+        return new ImageSequence(images);
     }
 
     private boolean isIn(int x, int y) {

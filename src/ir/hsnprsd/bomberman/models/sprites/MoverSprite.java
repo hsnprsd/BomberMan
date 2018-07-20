@@ -3,12 +3,14 @@ package ir.hsnprsd.bomberman.models.sprites;
 import ir.hsnprsd.bomberman.models.Game;
 import ir.hsnprsd.bomberman.models.geo.Direction;
 import ir.hsnprsd.bomberman.models.geo.Position;
+import ir.hsnprsd.bomberman.models.sprites.interfaces.Destroyable;
 
 import java.util.List;
 
-public abstract class MoverSprite extends Sprite {
-    private int speed;
+public abstract class MoverSprite extends Sprite implements Destroyable {
+    protected State state;
 
+    private int speed;
     private Direction direction, nextDirection;
 
     MoverSprite(Game game, Type type, Position position, int speed) {
@@ -33,9 +35,12 @@ public abstract class MoverSprite extends Sprite {
     }
 
     public void move() {
+        if (state == State.KILLED) {
+            throw new IllegalStateException();
+        }
         synchronized (game) {
-            if (!move(nextDirection)) {
-                if (!move(direction)) {
+            if (moveToDirection(nextDirection)) {
+                if (moveToDirection(direction)) {
                     direction = null;
                 }
             } else {
@@ -45,13 +50,16 @@ public abstract class MoverSprite extends Sprite {
         }
     }
 
-    private boolean move(Direction direction) {
+    private boolean moveToDirection(Direction direction) {
+        if (state == State.KILLED) {
+            throw new IllegalStateException();
+        }
         if (direction == null) {
-            return false;
+            return true;
         }
         Position destination = position.move(direction.dx * speed, direction.dy * speed);
         if (!new Position(0, 0, game.getWidth(), game.getHeight()).contains(destination)) {
-            return false;
+            return true;
         }
         List<Sprite> sprites = game.getSprites(destination);
         boolean valid = true;
@@ -63,6 +71,23 @@ public abstract class MoverSprite extends Sprite {
         if (valid) {
             position = destination;
         }
-        return valid;
+        return !valid;
+    }
+
+    @Override
+    public void destroy() {
+        setState(State.KILLED);
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    private void setState(State state) {
+        this.state = state;
+    }
+
+    public enum State {
+        ALIVE, KILLED
     }
 }

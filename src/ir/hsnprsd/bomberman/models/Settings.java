@@ -8,6 +8,10 @@ public interface Settings {
         int SPEED = 5;
     }
 
+    interface Bomb {
+        int TIMEOUT = 3000;
+    }
+
     interface Enemy {
         int SPEED = 2;
         int DECIDE_TIMEOUT = 1000;

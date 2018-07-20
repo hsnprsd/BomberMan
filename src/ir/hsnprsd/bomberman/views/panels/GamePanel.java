@@ -3,11 +3,14 @@ package ir.hsnprsd.bomberman.views.panels;
 import ir.hsnprsd.bomberman.controllers.GameController;
 import ir.hsnprsd.bomberman.models.Game;
 import ir.hsnprsd.bomberman.models.sprites.Block;
+import ir.hsnprsd.bomberman.models.sprites.Bomb;
 import ir.hsnprsd.bomberman.models.sprites.Enemy;
+import ir.hsnprsd.bomberman.views.GameFrame;
 import ir.hsnprsd.bomberman.views.Settings;
-import ir.hsnprsd.bomberman.views.sprites.BlockView;
-import ir.hsnprsd.bomberman.views.sprites.BomberManView;
-import ir.hsnprsd.bomberman.views.sprites.EnemyView;
+import ir.hsnprsd.bomberman.views.sprites.BlockPainter;
+import ir.hsnprsd.bomberman.views.sprites.BombPainter;
+import ir.hsnprsd.bomberman.views.sprites.BomberManPainter;
+import ir.hsnprsd.bomberman.views.sprites.EnemyPainter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,13 +26,17 @@ public class GamePanel extends JPanel {
     private final Game game;
     private final GameController controller;
 
-    private final BomberManView bomberManView;
-    private final HashMap<Enemy, EnemyView> enemyViews = new HashMap<>();
-    private final HashMap<Block, BlockView> blockViews = new HashMap<>();
+    private GameFrame frame;
 
-    public GamePanel(Game game, GameController controller) {
+    private final BomberManPainter bomberManPainter;
+    private final HashMap<Bomb, BombPainter> bombViews = new HashMap<>();
+    private final HashMap<Enemy, EnemyPainter> enemyViews = new HashMap<>();
+    private final HashMap<Block, BlockPainter> blockViews = new HashMap<>();
+
+    public GamePanel(Game game, GameController controller, GameFrame frame) {
         this.game = game;
         this.controller = controller;
+        this.frame = frame;
 
         setPreferredSize(new Dimension(game.getWidth(), game.getHeight()));
 
@@ -46,12 +53,12 @@ public class GamePanel extends JPanel {
         });
 
         synchronized (game) {
-            bomberManView = new BomberManView(game, game.getBomberMan());
+            bomberManPainter = new BomberManPainter(game, game.getBomberMan());
             for (Enemy enemy : game.getEnemies()) {
-                enemyViews.put(enemy, new EnemyView(game, enemy));
+                enemyViews.put(enemy, new EnemyPainter(game, enemy));
             }
             for (Block block : game.getBlocks()) {
-                blockViews.put(block, new BlockView(game, block));
+                blockViews.put(block, new BlockPainter(game, block));
             }
         }
     }
@@ -80,19 +87,37 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics g = image.getGraphics();
-        drawBG(g);
         synchronized (game) {
-            bomberManView.draw(g);
-            for (EnemyView enemyView : enemyViews.values()) {
-                enemyView.draw(g);
+            if (game.getState() == Game.State.GAMEOVER) {
+                frame.showGameOver();
+                return;
             }
-            for (BlockView blockView : blockViews.values()) {
-                blockView.draw(g);
+            BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics g = image.getGraphics();
+            drawBG(g);
+            bomberManPainter.draw(g);
+            updateBombs();
+            for (BombPainter bombPainter : bombViews.values()) {
+                bombPainter.draw(g);
+            }
+            for (EnemyPainter enemyPainter : enemyViews.values()) {
+                enemyPainter.draw(g);
+            }
+            for (BlockPainter blockPainter : blockViews.values()) {
+                blockPainter.draw(g);
+            }
+            graphics.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+        }
+    }
+
+    private void updateBombs() {
+        synchronized (game) {
+            for (Bomb bomb : game.getBombs()) {
+                if (!bombViews.containsKey(bomb)) {
+                    bombViews.put(bomb, new BombPainter(game, bomb));
+                }
             }
         }
-        graphics.drawImage(image, 0, 0, getWidth(), getHeight(), null);
     }
 
     private void drawBG(Graphics g) {

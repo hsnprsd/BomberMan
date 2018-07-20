@@ -3,10 +3,8 @@ package ir.hsnprsd.bomberman.models;
 import ir.hsnprsd.bomberman.models.actions.Action;
 import ir.hsnprsd.bomberman.models.actions.MoveAction;
 import ir.hsnprsd.bomberman.models.geo.Position;
-import ir.hsnprsd.bomberman.models.sprites.Block;
-import ir.hsnprsd.bomberman.models.sprites.BomberMan;
-import ir.hsnprsd.bomberman.models.sprites.Enemy;
-import ir.hsnprsd.bomberman.models.sprites.Sprite;
+import ir.hsnprsd.bomberman.models.sprites.*;
+import ir.hsnprsd.bomberman.models.sprites.interfaces.Destroyable;
 
 import java.util.*;
 
@@ -19,6 +17,7 @@ public class Game {
     private State state = State.LOADING;
 
     private BomberMan bomberMan;
+    private List<Bomb> bombs = new ArrayList<>();
     private List<Enemy> enemies = new ArrayList<>();
     private List<Block> blocks = new ArrayList<>();
 
@@ -70,6 +69,22 @@ public class Game {
         return result;
     }
 
+    public synchronized void destroySprites(Position position) {
+        for (Sprite sprite : getSprites(position)) {
+            if (sprite instanceof Destroyable) {
+                ((Destroyable) sprite).destroy();
+                switch (sprite.getType()) {
+                    case BOMBERMAN:
+                        setState(State.GAMEOVER);
+                        break;
+                    case ENEMY:
+                        enemies.remove(((Enemy) sprite));
+                        break;
+                }
+            }
+        }
+    }
+
     public int getCellSize() {
         return Settings.CELL_SIZE;
     }
@@ -86,12 +101,16 @@ public class Game {
         return bomberMan;
     }
 
-    public List<Enemy> getEnemies() {
-        return enemies;
+    public List<Bomb> getBombs() {
+        return bombs;
+    }
+
+    public synchronized List<Enemy> getEnemies() {
+        return Collections.unmodifiableList(enemies);
     }
 
     public synchronized List<Block> getBlocks() {
-        return blocks;
+        return Collections.unmodifiableList(blocks);
     }
 
     public synchronized State getState() {
@@ -118,14 +137,29 @@ public class Game {
                 MoveAction moveAction = ((MoveAction) action);
                 moveAction.getSprite().setNextDirection(moveAction.getDirection());
                 break;
+            case BOMB:
+                bomberMan.placeBomb();
+                break;
         }
     }
 
     private synchronized void doUpdates() {
+        bomberMan.move();
+
         for (Enemy enemy : enemies) {
             enemy.move();
         }
-        bomberMan.move();
+
+        // bomb garbage collection
+        ArrayList<Bomb> explodedBombs = new ArrayList<>();
+        for (Bomb bomb : bombs) {
+            if (bomb.getState() == Bomb.State.EXPLODED) {
+                explodedBombs.add(bomb);
+            }
+        }
+        for (Bomb bomb : explodedBombs) {
+            bombs.remove(bomb);
+        }
     }
 
     public void start() {

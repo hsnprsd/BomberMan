@@ -2,6 +2,7 @@ package ir.hsnprsd.bomberman.controllers;
 
 import ir.hsnprsd.bomberman.models.Game;
 import ir.hsnprsd.bomberman.models.actions.Action;
+import ir.hsnprsd.bomberman.models.actions.BombAction;
 import ir.hsnprsd.bomberman.models.actions.MoveAction;
 import ir.hsnprsd.bomberman.models.geo.Direction;
 import ir.hsnprsd.bomberman.models.sprites.BomberMan;
@@ -34,6 +35,9 @@ public class BomberManController {
                 break;
             case KeyEvent.VK_LEFT:
                 action = new MoveAction(bomberMan, Direction.LEFT);
+                break;
+            case KeyEvent.VK_SPACE:
+                action = new BombAction();
                 break;
         }
         if (action != null) {
